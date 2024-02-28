@@ -17,10 +17,10 @@ let clientTestsPath = Path.getFullName "tests/Client"
 
 Target.create "Clean" (fun _ ->
     Shell.cleanDir deployPath
-    run dotnet [ "fable"; "clean"; "--yes" ] clientPath // Delete *.fs.js files created by Fable
+    run "dotnet" (dotnet [ "fable"; "clean"; "--yes" ] clientPath) // Delete *.fs.js files created by Fable
 )
 
-Target.create "InstallClient" (fun _ -> run npm [ "install" ] ".")
+Target.create "InstallClient" (fun _ -> run "npm" (npm [ "install" ] "."))
 
 Target.create "Bundle" (fun _ ->
     [
@@ -42,11 +42,12 @@ Target.create "Azure" (fun _ ->
         add_resource web
     }
 
-    deployment |> Deploy.execute "SAFE-App" Deploy.NoParameters |> ignore)
+    deployment
+    |> Deploy.execute "SAFE-App" Deploy.NoParameters
+    |> ignore)
 
 Target.create "Run" (fun _ ->
-    run dotnet [ "build" ] sharedPath
-
+    run "dotnet" (dotnet [ "build" ] sharedPath)
     [
         "server", dotnet [ "watch"; "run" ] serverPath
         "client", dotnet [ "fable"; "watch"; "-o"; "output"; "-s"; "--run"; "npx"; "vite" ] clientPath
@@ -54,25 +55,22 @@ Target.create "Run" (fun _ ->
     |> runParallel)
 
 Target.create "RunTests" (fun _ ->
-    run dotnet [ "build" ] sharedTestsPath
-
+    run "dotnet" (dotnet [ "build" ] sharedTestsPath)
     [
         "server", dotnet [ "watch"; "run" ] serverTestsPath
         "client", dotnet [ "fable"; "watch"; "-o"; "output"; "-s"; "--run"; "npx"; "vite" ] clientTestsPath
     ]
     |> runParallel)
 
-Target.create "Format" (fun _ -> run dotnet [ "fantomas"; "." ] ".")
+Target.create "Format" (fun _ -> run "dotnet" (dotnet [ "fantomas"; "." ] "."))
 
 open Fake.Core.TargetOperators
-
 let dependencies = [
     "Clean" ==> "InstallClient" ==> "Bundle" ==> "Azure"
-
     "Clean" ==> "InstallClient" ==> "Run"
-
     "InstallClient" ==> "RunTests"
 ]
 
 [<EntryPoint>]
-let main args = runOrDefault args
+let main args =
+    runOrDefault args
