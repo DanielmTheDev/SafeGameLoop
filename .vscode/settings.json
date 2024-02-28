@@ -5,5 +5,9 @@
     "tailwindCSS.experimental.classRegex": [
         "\\.className\\s+\"([^\"]*)\"",
         ["\\.className\\s+\\[([^\\]]*)\\]", "\"([^\"]*)\""]
-    ]
+    ],
+    "FSharp.inlayHints.typeAnnotations": false,
+    "FSharp.inlayHints.enabled": false,
+    "FSharp.inlayHints.disableLongTooltip": true,
+    "editor.inlayHints.enabled": "offUnlessPressed"
 }
